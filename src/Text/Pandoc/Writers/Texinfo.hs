@@ -11,7 +11,10 @@
 
 Conversion of 'Pandoc' format into Texinfo.
 -}
-module Text.Pandoc.Writers.Texinfo ( writeTexinfo ) where
+module Text.Pandoc.Writers.Texinfo
+  ( writeTexinfoWithoutTop
+  , writeTexinfo ) where
+
 import Control.Monad.Except (throwError)
 import Control.Monad.State.Strict
 import Data.Char (chr, ord)
@@ -51,7 +54,12 @@ type TI m = StateT WriterState m
 -- | Convert Pandoc to Texinfo.
 writeTexinfo :: PandocMonad m => WriterOptions -> Pandoc -> m Text
 writeTexinfo options document =
-  evalStateT (pandocToTexinfo options $ wrapTop document)
+  writeTexinfo options $ wrapTop document
+  
+-- | Convert Pandoc (without a Top) to Texinfo.
+writeTexinfoWithoutTop :: PandocMonad m => WriterOptions -> Pandoc -> m Text
+writeTexinfoWithoutTop options document =
+  evalStateT (pandocToTexinfo options document)
   WriterState { stStrikeout = False, stEscapeComma = False,
                 stIdentifiers = Set.empty, stOptions = options}
 
